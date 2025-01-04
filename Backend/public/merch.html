@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Sparkle Bookings</title>
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            // Show a message to the user
+            alert('Please signup or login to access this page.');
+    
+            // Save the current page URL for redirecting after login
+            const currentPage = window.location.href;
+            window.location.href = `index.html?redirect=${encodeURIComponent(currentPage)}`;
+        }
+    </script>
+     
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        /* General Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #101010; /* Dark theme for Marvel vibe */
+    color: #ffffff; /* Text color to stand out against dark background */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* Background container with overlay */
+.background-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('imgs/a3.jpg'); /* Replace with a Marvel-themed image */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    z-index: -1;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Black overlay for a cinematic look */
+    z-index: -1;
+}
+
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+/* Navbar Styling */
+.navbar {
+    background: linear-gradient(to left bottom, #000000, #a01c13);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.navbar .navbar-brand {
+    font-size: 1.3rem; /* Increase font size for better visibility */
+    color: white;
+    letter-spacing: 1.5px;
+    font-weight: 600; /* Bold text for emphasis */
+}
+
+.navbar a {
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+    font-size: 1.3rem; /* Ensure text is readable */
+    font-weight: 500; /* Medium font weight for better clarity */
+    letter-spacing: 1px;
+}
+
+.navbar a:hover {
+    color: #f5f5f5;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); /* Subtle hover effect */
+}
+
+
+/* Product Container Styling */
+.merch-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 120px 20px 40px 20px;
+}
+
+.merch-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.merch-header h1 {
+    font-size: 2.8rem;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.merch-header p {
+    font-size: 1.2rem;
+    color: #f5f5f5;
+    margin-top: 10px;
+}
+
+/* Product Cards */
+.product-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.product-card {
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 10px;
+    width: 280px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 15px;
+    height: auto;
+    box-sizing: border-box;
+}
+
+.product-card:hover {
+    transform: scale(1.05);
+    box-shadow:0 20px 20px rgba(255, 0, 0, 0.4);
+}
+
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.product-card h3 {
+    font-size: 1.4rem;
+    color: #e23636;
+    text-align: center;
+    margin: 15px 0;
+}
+
+.product-card p {
+    font-size: 1rem;
+    color: #f5f5f5;
+    text-align: center;
+    margin: 10px 0;
+}
+
+.product-card .buy-btn {
+    background-color: #e23636;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    text-transform: uppercase;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    align-self: center;
+    margin-top: auto;
+}
+
+/* Cart Popup Styling */
+#cart-popup {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+            background-color: rgb(2, 1, 1);
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            display: none;
+            z-index: 1000;
+            color: #ffffff;
+        }
+
+        #cart-popup h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        #cart-popup .cart-items {
+            max-height: 60vh;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        #cart-popup .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #cart-popup .total {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        #cart-popup .close-btn {
+            background-color: #d9534f;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        #cart-popup .close-btn:hover {
+            background-color: #c9302c;
+        }
+
+        #cart-popup .checkout-btn {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        #cart-popup .checkout-btn:hover {
+            background-color: #7fae4c;
+        }
+
+
+.product-card .buy-btn:hover {
+    background-color: #c22d2d;
+}
+
+#footer {
+    width: 100%;
+    height: 30vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: linear-gradient(to left bottom, #000000, #a01c13);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    position: relative;
+    margin-top: auto;
+}
+
+#footer a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+        #footer h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #d90202;
+        }
+
+        #f1, #f2, #f3, #f4 {
+            display: flex;
+            align-items: start;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+#f4 {
+    text-align: center;
+}
+
+#social-icons {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  justify-content: center; /* Center the icons */
+}
+
+#social-icons img {
+  height: 40px; /* Set a fixed height */
+  width: auto; /* Set a fixed width to ensure uniformity */
+  object-fit: cover; /* Ensures proper scaling of images */
+  transition: transform 0.3s ease, filter 0.3s ease; /* Smooth hover effect */
+}
+
+#social-icons img:hover {
+  transform: scale(1.1); /* Slight zoom effect on hover */
+  filter: brightness(1) invert(0); /* Change to original color on hover */
+}
+
+/* Styling for #f4 section */
+#f4 {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the content horizontally */
+    text-align: center; /* Ensures text is centered */
+    margin-top: 20px;
+}
+
+#f4 h6 {
+    font-size: 1rem;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+#f4 .app-icons {
+    display: flex;
+    gap: 10px; /* Adds space between the icons */
+    justify-content: center; /* Centers icons horizontally */
+    margin-bottom: 10px; /* Adds space between icons and the footer text */
+}
+
+#f4 .app-icons img {
+    height: 50px;
+    width: auto; /* Maintains aspect ratio */
+    transition: transform 0.3s ease; /* Adds a subtle hover effect */
+}
+
+#f4 .app-icons img:hover {
+    transform: scale(1.1); /* Slight zoom on hover */
+}
+
+#f4 p {
+    font-size: 0.8rem;
+    color: #ccc;
+    margin-top: 10px;
+}
+
+    </style>
+</head>
+<body>
+    <div class="background-container">
+        <div class="overlay"></div>
+    </div>
+
+    <nav class="navbar navbar-light">
+        <!-- Left Section: Logo and Name -->
+        <div id="logo" style="display: flex; align-items: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="white" class="bi bi-upc-scan" viewBox="0 0 16 16">
+                <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z"/>
+              </svg>
+            <a class="navbar-brand" href="index.html">MarvelVerse</a>
+        </div>
+    
+        <!-- Right Section: Navigation Links and Logout -->
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div id="content" style="display: flex; gap: 15px;">
+                <a href="dashboard.html" >Home Page</a>
+                <a href="merch.html" >Merch</a>
+                <a href="community.html" >Marvelites</a>
+                <a href="characters.html">Characters</a>
+            </div>
+            <button onclick="logoutUser()" style="background-color: transparent; border: none; color: white; font-size: 1.3rem; cursor: pointer;">Logout</button>
+        </div>
+    </nav>
+    
+    
+
+    <div class="merch-container">
+        <div class="merch-header">
+            <h1>Marvel Merchandise</h1>
+            <p>Explore our exclusive collection of Marvel-themed products and unleash your inner superhero!</p>
+        </div>
+        <div class="product-list">
+            <!-- Product Card 1 -->
+            <div class="product-card">
+                <img src="imgs/ironman-m.jpeg" alt="Iron Man T-Shirt">
+                <h3>Iron Man T-Shirt</h3>
+                <p>Show your love for Iron Man with this exclusive T-shirt.</p>
+                <p><strong>$25</strong></p>
+                <button class="buy-btn" onclick="addToCart('Iron Man T-Shirt', 25)">Buy Now</button>
+            </div>
+    
+            <!-- Product Card 2 -->
+            <div class="product-card">
+                <img src="imgs/captainamerica-m.jpg" alt="Captain America Shield">
+                <h3>Captain America Shield</h3>
+                <p>Own a replica of the iconic Vibranium shield.</p>
+                <p><strong>$100</strong></p>
+                <button class="buy-btn" onclick="addToCart('Captain America Shield', 100)">Buy Now</button>
+            </div>
+    
+            <!-- Product Card 3 -->
+            <div class="product-card">
+                <img src="imgs/spiderman-m.jpeg" alt="Spider-Man Hoodie">
+                <h3>Spider-Man Hoodie</h3>
+                <p>Stay cozy and stylish with this Spider-Man hoodie.</p>
+                <p><strong>$40</strong></p>
+                <button class="buy-btn" onclick="addToCart('Spider-Man Hoodie', 40)">Buy Now</button>
+            </div>
+    
+            <!-- Product Card 4 -->
+            <div class="product-card">
+                <img src="imgs/infinitygauntlet-m.jpeg" alt="Infinity Gauntlet Replica">
+                <h3>Infinity Gauntlet Replica</h3>
+                <p>Wield the power of the Infinity Stones with this replica.</p>
+                <p><strong>$150</strong></p>
+                <button class="buy-btn" onclick="addToCart('Infinity Gauntlet Replica', 150)">Buy Now</button>
+            </div>
+    
+            <!-- Product Card 5 -->
+            <div class="product-card">
+                <img src="imgs/mjolnir-m.jpeg" alt="Thor’s Mjolnir Keychain">
+                <h3>Thor’s Mjolnir Keychain</h3>
+                <p>Carry the might of Mjolnir with you wherever you go.</p>
+                <p><strong>$10</strong></p>
+                <button class="buy-btn" onclick="addToCart('Thor’s Mjolnir Keychain', 10)">Buy Now</button>
+            </div>
+    
+            <!-- Product Card 6 -->
+            <div class="product-card">
+                <img src="imgs/blackwidow-m.jpeg" alt="Black Widow Action Figure">
+                <h3>Black Widow Action Figure</h3>
+                <p>Add this detailed Black Widow figure to your collection.</p>
+                <p><strong>$30</strong></p>
+                <button class="buy-btn" onclick="addToCart('Black Widow Action Figure', 30)">Buy Now</button>
+            </div>
+    
+            <!-- Product Card 7 -->
+            <div class="product-card">
+                <img src="imgs/hulk-m.jpeg" alt="Hulk Smash Mug">
+                <h3>Hulk Smash Mug</h3>
+                <p>Fuel your day with this smashing Hulk-themed mug.</p>
+                <p><strong>$15</strong></p>
+                <button class="buy-btn" onclick="addToCart('Hulk Smash Mug', 15)">Buy Now</button>
+            </div>
+    
+            <!-- Product Card 8 -->
+            <div class="product-card">
+                <img src="imgs/blackpanther-m.jpeg" alt="Black Panther Necklace">
+                <h3>Black Panther Necklace</h3>
+                <p>Feel the strength of Wakanda with this stylish necklace.</p>
+                <p><strong>$20</strong></p>
+                <button class="buy-btn" onclick="addToCart('Black Panther Necklace', 20)">Buy Now</button>
+            </div>
+    
+            <!-- Product Card 9 -->
+            <div class="product-card">
+                <img src="imgs/captainmarvel-m.jpeg" alt="Captain Marvel Poster">
+                <h3>Captain Marvel Poster</h3>
+                <p>Decorate your space with this powerful Captain Marvel poster.</p>
+                <p><strong>$12</strong></p>
+                <button class="buy-btn" onclick="addToCart('Captain Marvel Poster', 12)">Buy Now</button>
+            </div>
+    
+            <!-- Product Card 10 -->
+            <div class="product-card">
+                <img src="imgs/loki-m.jpeg" alt="Loki Helmet Figurine">
+                <h3>Loki Helmet Figurine</h3>
+                <p>Showcase your love for mischief with Loki’s helmet replica.</p>
+                <p><strong>$50</strong></p>
+                <button class="buy-btn" onclick="addToCart('Loki Helmet Figurine', 50)">Buy Now</button>
+            </div>
+    
+            <!-- Product Card 11 -->
+            <div class="product-card">
+                <img src="imgs/doctorstrange-m.jpeg" alt="Doctor Strange Eye of Agamotto">
+                <h3>Doctor Strange Eye of Agamotto</h3>
+                <p>Carry the mystic power with this detailed replica.</p>
+                <p><strong>$80</strong></p>
+                <button class="buy-btn" onclick="addToCart('Doctor Strange Eye of Agamotto', 80)">Buy Now</button>
+            </div>
+    
+            <!-- Product Card 12 -->
+            <div class="product-card">
+                <img src="imgs/gotg-m.jpeg" alt="Guardians of the Galaxy Mix Tape">
+                <h3>Guardians of the Galaxy Mix Tape</h3>
+                <p>Relive the awesome music from Guardians of the Galaxy.</p>
+                <p><strong>$15</strong></p>
+                <button class="buy-btn" onclick="addToCart('Guardians of the Galaxy Mix Tape', 15)">Buy Now</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="footer">
+        <div id="f1">
+            <h1>Explore the Universe</h1>
+            <a href="#">Marvel Characters</a>
+            <a href="#">Comics</a>
+            <a href="#">Movies</a>
+            <a href="#">TV Shows</a>
+        </div>
+        <div id="f2">
+            <h1>Community</h1>
+            <a href="#">Join Marvelites</a>
+            <a href="#">Fan Events</a>
+            <a href="#">Discussion Forums</a>
+            <a href="#">Contests</a>
+        </div>
+        <div id="f3">
+            <h1>Contact Us</h1>
+            <p>Marvel Universe HQ, 
+                <br>123 Hero Lane, 
+                <br>Stark Tower, 
+                <br>New York City, NY 10001, USA</p>
+            <p>Call: 1-800-MARVEL</p>
+            <p>Email: support@marveluniverse.com</p>
+            <div id="social-icons">
+                <a href="#"><img src="imgs/facebook-icon.png" alt="Facebook" style="height:30px; width:30px;"></a>
+                <a href="#"><img src="imgs/twitter-icon.png" alt="Twitter" style="height:30px; width:30px;"></a>
+                <a href="#"><img src="imgs/instagram-icon.png" alt="Instagram" style="height:30px; width:30px;"></a>
+                <a href="#"><img src="imgs/youtube-icon.png" alt="YouTube" style="height:30px; width:30px;"></a>
+            </div>
+        </div>
+        <div id="f4">
+            <h6>Download the Marvel App</h6>
+            <div class="app-icons">
+                <img src="imgs/appstore.png" alt="App Store">
+                <img src="imgs/gplay.webp" alt="Google Play">
+            </div>
+            <p>© 2025 Marvel Universe. All rights reserved.</p>
+        </div>
+        
+    </div>
+
+    <!-- Cart Popup -->
+    <div id="cart-popup">
+        <h2>Your Cart</h2>
+        <div class="cart-items" id="cart-items">
+            <!-- Cart items will be listed here -->
+        </div>
+        <div class="total" id="cart-total">
+            Total: $0
+        </div>
+        <button class="checkout-btn" onclick="checkout()">Checkout</button>
+        <button class="close-btn" onclick="closeCart()">Close Cart</button>
+    </div>
+
+    <script>
+        let cart = [];
+        let total = 0;
+
+        function addToCart(service, price) {
+            cart.push({ service, price });
+            total += price;
+            updateCart();
+            openCart();
+
+            // Save the cart to localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
+            localStorage.setItem('total', total);
+        }
+
+        function updateCart() {
+            const cartItemsDiv = document.getElementById('cart-items');
+            cartItemsDiv.innerHTML = '';
+            cart.forEach(item => {
+                const cartItem = document.createElement('div');
+                cartItem.classList.add('cart-item');
+                cartItem.innerHTML = `<span>${item.service}</span> <span>$${item.price}</span>`;
+                cartItemsDiv.appendChild(cartItem);
+            });
+
+            const cartTotal = document.getElementById('cart-total');
+            cartTotal.innerHTML = `Total: $${total}`;
+        }
+
+        function openCart() {
+            document.getElementById('cart-popup').style.display = 'block';
+        }
+
+        function closeCart() {
+            document.getElementById('cart-popup').style.display = 'none';
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert("Your cart is empty! Please add items before checking out.");
+                return;
+            }
+
+            window.location.href = 'payment.html'; // Redirect to payment page
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('token'); // Clear token from localStorage
+            alert('Logged out successfully!');
+            window.location.href = 'index.html'; // Redirect to login page
+        }
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
