@@ -116,7 +116,7 @@ video{
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url('/Users/srirakshasiva/Desktop/Bello/Backend/public/imgs/a2.webp'); /* Replace with your image path */
+    background-image: url('imgs/a2.jpg'); /* Replace with your image path */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
